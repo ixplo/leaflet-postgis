@@ -5,4 +5,15 @@
     {{ layer.properties.id }}
   </option>
 </select>
-<div id="map"></div>
+<div class="location-inputs">
+  <label>
+    Latitude:
+    <input type="number" [(ngModel)]="latitude" step="0.01">
+  </label>
+  <label>
+    Longitude:
+    <input type="number" [(ngModel)]="longitude" step="0.01">
+  </label>
+  <button (click)="updateLocation()">Update Location</button>
+</div>
+<div id="map" style="height: 500px;"></div>
