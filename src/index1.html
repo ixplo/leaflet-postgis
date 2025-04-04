@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>PostGIS Lines in Leaflet</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Include Leaflet CSS and JavaScript -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+  
+  <style>
+    body {
+        margin: 0;
+        padding: 0;
+    }
+    #map {
+        width: 100%;
+        height: 100vh;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <script>
+    // Initialize the map
+    const map = L.map('map').setView([51.505, -0.09], 13); // Set initial coordinates and zoom level
+
+    // Add OpenStreetMap tile layer
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    // Function to fetch GeoJSON data from your backend
+    async function loadGeoJSONFromPostGIS() {
+        try {
+            // Replace with your actual API endpoint that fetches data from PostGIS
+            const response = await fetch('/api/getLines');
+            const geojsonData = await response.json();
+
+            // Add GeoJSON to map with some styling
+            L.geoJSON(geojsonData, {
+                style: {
+                    color: "#ff7800",
+                    weight: 5,
+                    opacity: 0.65
+                },
+                onEachFeature: function(feature, layer) {
+                    // Add popups if your features have properties you want to display
+                    if (feature.properties) {
+                        layer.bindPopup(
+                            Object.keys(feature.properties)
+                                .map(key => `<strong>${key}:</strong> ${feature.properties[key]}`)
+                                .join('
+                        ')
+                    );
+                    }
+                }
+            }).addTo(map);
+
+            // Zoom to the extent of the data
+            const bounds = L.geoJSON(geojsonData).getBounds();
+            map.fitBounds(bounds);
+
+        } catch (error) {
+            console.error("Error loading GeoJSON data:", error);
+        }
+    }
+
+    // For demonstration, here's a sample GeoJSON that would come from your PostGIS database
+    const sampleGeoJSON = {
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "type": "Feature",
+                "properties": {
+                    "id": 1,
+                    "name": "Route 1"
+                },
+                "geometry": {
+                    "type": "LineString",
+                    "coordinates": [
+                        [-0.12, 51.51],
+                        [-0.11, 51.52],
+                        [-0.09, 51.53]
+                    ]
+                }
+            },
+            {
+                "type": "Feature",
+                "properties": {
+                    "id": 2,
+                    "name": "Route 2"
+                },
+                "geometry": {
+                    "type": "LineString",
+                    "coordinates": [
+                        [-0.08, 51.50],
+                        [-0.07, 51.49],
+                        [-0.06, 51.48]
+                    ]
+                }
+            }
+        ]
+    };
+
+    // If you don't have an API endpoint yet, you can use this to display sample data
+    function loadSampleData() {
+        L.geoJSON(sampleGeoJSON, {
+            style: {
+                color: "#ff7800",
+                weight: 5,
+                opacity: 0.65
+            },
+            onEachFeature: function(feature, layer) {
+                if (feature.properties) {
+                    layer.bindPopup(
+                        Object.keys(feature.properties)
+                            .map(key => `<strong>${key}:</strong> ${feature.properties[key]}`)
+                            .join('
+                    ')
+                );
+                }
+            }
+        }).addTo(map);
+
+        const bounds = L.geoJSON(sampleGeoJSON).getBounds();
+        map.fitBounds(bounds);
+    }
+
+    // Uncomment the line below to fetch from your API
+    // loadGeoJSONFromPostGIS();
+
+    // Using sample data for demonstration
+    loadSampleData();
+  </script>
+</body>
+</html>

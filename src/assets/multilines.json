@@ -1,0 +1,16 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "name": "Sample MultiLine" },
+      "geometry": {
+        "type": "MultiLineString",
+        "coordinates": [
+          [[-82.5, 27.95], [-82.4, 27.95]],
+          [[-82.45, 27.9], [-82.45, 28.0]]
+        ]
+      }
+    }
+  ]
+}

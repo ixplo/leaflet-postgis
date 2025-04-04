@@ -1,0 +1,8 @@
+<h2>PostGIS Multi-Line Map Demo</h2>
+<label for="layer-select">Select Layer:</label>
+<select id="layer-select" (change)="onLayerChange($event)" [(ngModel)]="selectedLayerName">
+  <option *ngFor="let layer of layers" [value]="layer.properties.id">
+    {{ layer.properties.id }}
+  </option>
+</select>
+<div id="map"></div>
